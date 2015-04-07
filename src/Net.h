@@ -17,17 +17,22 @@ class Net {
 		vector<mat> data;
 		vector<int> label;
 		vector<int> index;
+		double learning_rate;
 
-		Net(vector<int> layers, double learning_rate);
-	        void load(string, vector<mat>&, vector<int>&, vector<int>&);
+		Net();
+		void load_model(vector<int>);
+		void load_model(string);
+		Net(string);
+	        void load_train_data(string, vector<mat>&, vector<int>&, vector<int>&);
+		void save_model(string, string);
+
 		int feedforward(mat);
 		void backprop(mat);
 		void update();
-		float report_error_rate(vector<mat>&,vector<int>&);
 
+		void predict(string,string);
+		float report_error_rate(vector<mat>&,vector<int>&,vector<int>&);
 	private:
-		double learning_rate;
-
 		vector<mat> weights;
 		vector<mat> bias;
 		vector<mat> inputs;

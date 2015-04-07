@@ -3,3 +3,5 @@ MLDS_HW1_RELEASE_v1/
 *.pyc
 *.un~
 bin/
+output/
+script/
