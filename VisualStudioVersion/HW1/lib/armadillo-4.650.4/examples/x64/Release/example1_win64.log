@@ -1,0 +1,19 @@
+﻿已經開始建置於 2015/4/8 下午 08:02:59。
+     1>節點 2 (Rebuild 目標) 上的專案 "D:\OneDrive\SourceTree\DeepLearning2015\HW1\VisualStudioVersion\HW1\lib\armadillo-4.650.4\examples\example1_win64.vcxproj"。
+     1>ClCompile:
+         C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\x86_amd64\CL.exe /c /I..\include /Zi /nologo /W1 /WX- /O2 /D ARMA_USE_LAPACK /D ARMA_USE_BLAS /Gm- /EHsc /MD /GS /fp:precise /Zc:wchar_t /Zc:forScope /Fo"x64\Release\\" /Fd"x64\Release\vc120.pdb" /Gd /TP /errorReport:prompt example1.cpp
+         example1.cpp
+       Link:
+         C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\x86_amd64\link.exe /ERRORREPORT:PROMPT /OUT:"D:\OneDrive\SourceTree\DeepLearning2015\HW1\VisualStudioVersion\HW1\lib\armadillo-4.650.4\examples\x64\Release\example1_win64.exe" /NOLOGO /LIBPATH:lib_win64 lapack_win64_MT.lib blas_win64_MT.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /PDB:"D:\OneDrive\SourceTree\DeepLearning2015\HW1\VisualStudioVersion\HW1\lib\armadillo-4.650.4\examples\x64\Release\example1_win64.pdb" /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"D:\OneDrive\SourceTree\DeepLearning2015\HW1\VisualStudioVersion\HW1\lib\armadillo-4.650.4\examples\x64\Release\example1_win64.lib" /MACHINE:X64 x64\Release\example1.obj
+         example1_win64.vcxproj -> D:\OneDrive\SourceTree\DeepLearning2015\HW1\VisualStudioVersion\HW1\lib\armadillo-4.650.4\examples\x64\Release\example1_win64.exe
+       PostBuildEvent:
+         copy lib_win64\*.dll D:\OneDrive\SourceTree\DeepLearning2015\HW1\VisualStudioVersion\HW1\lib\armadillo-4.650.4\examples\x64\Release\
+         :VCEnd
+         lib_win64\blas_win64_MT.dll
+         lib_win64\lapack_win64_MT.dll
+         複製了         2 個檔案。
+     1>專案 "D:\OneDrive\SourceTree\DeepLearning2015\HW1\VisualStudioVersion\HW1\lib\armadillo-4.650.4\examples\example1_win64.vcxproj" (Rebuild 目標) 建置完成。
+
+建置成功。
+
+經過時間 00:00:03.16
