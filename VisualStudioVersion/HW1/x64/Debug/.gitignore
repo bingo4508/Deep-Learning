@@ -1,8 +1,0 @@
-MLDS_HW1_RELEASE_v1/
-*.o
-*.pyc
-*.un~
-bin/
-script/
-input/
-output/
