@@ -5,7 +5,7 @@
 #include "Net.h"
 
 #define PAUSE printf("Press Enter key to continue..."); fgetc(stdin);
-#define GET_SECS(t1,t2); (t2-t1)/(double)(CLOCKS_PER_SEC);
+#define GET_SECS(t1,t2) (t2-t1)/(double)(CLOCKS_PER_SEC)
 
 using namespace std;
 
@@ -61,7 +61,7 @@ int main(int argc, char** argv){
 	t1 = clock();
 	d.load_train_data(train_fname,d.data,d.label,d.index);
 	t2 = clock();
-	printf("spent %f secs\n", GET_SECS(t1,t2))
+	printf("spent %f secs\n", GET_SECS(t1,t2));
 
 	vector<int> valid_index(d.index.begin(), d.index.begin()+d.index.size()*valid_ratio);
 	vector<int> train_index(d.index.begin()+d.index.size()*valid_ratio, d.index.end());
