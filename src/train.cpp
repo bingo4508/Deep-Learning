@@ -1,14 +1,17 @@
 #include <iostream>
 #include <algorithm>
 #include <stdio.h>
+#include <time.h>
 #include "Net.h"
 
 #define PAUSE printf("Press Enter key to continue..."); fgetc(stdin);
+#define GET_SECS(t1,t2); (t2-t1)/(double)(CLOCKS_PER_SEC);
 
 using namespace std;
 
 
 int main(int argc, char** argv){
+	clock_t t1, t2;
 	double learning_rate;
 	int batch_size;
 	vector<int> layers;
@@ -55,13 +58,19 @@ int main(int argc, char** argv){
 
 	//Loading data
 	puts("Loading training data...");
+	t1 = clock();
 	d.load_train_data(train_fname,d.data,d.label,d.index);
+	t2 = clock();
+	printf("spent %f secs\n", GET_SECS(t1,t2))
+
 	vector<int> valid_index(d.index.begin(), d.index.begin()+d.index.size()*valid_ratio);
 	vector<int> train_index(d.index.begin()+d.index.size()*valid_ratio, d.index.end());
 
 	//Training
 	puts("Start training...");
 	for(int epoch=0;epoch<max_epoch;epoch++){
+		t1 = clock();
+
 		random_shuffle(train_index.begin(), train_index.end());
 		int j=0;
 		for(vector<int>::iterator it=train_index.begin();it!=train_index.end();++it,++j){
@@ -74,7 +83,9 @@ int main(int argc, char** argv){
 		}
 		float train_err = d.report_error_rate(d.data,d.label, train_index);
 		float valid_err = d.report_error_rate(d.data,d.label, valid_index);
-		printf("epoch %d\ttrain err:%f\tvalid err:%f\n", epoch,train_err,valid_err);
+
+		t2 = clock();
+		printf("epoch %d\ttrain err:%f\tvalid err:%f\t%f secs\n", epoch,train_err,valid_err,GET_SECS(t1,t2));
 		d.save_model(output_model, structure);
 	}
 }
