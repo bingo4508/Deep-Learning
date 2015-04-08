@@ -212,6 +212,6 @@ float Net::report_error_rate(vector<mat>& data, vector<int> &label, vector<int> 
 			err ++;
 		}
 	}
-	return err/data.size();
+	return err/index.size();
 }
 
