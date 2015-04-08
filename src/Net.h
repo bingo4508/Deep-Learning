@@ -18,6 +18,7 @@ class Net {
 		vector<int> label;
 		vector<int> index;
 		double learning_rate;
+		int batch_size;
 
 		Net();
 		void load_model(vector<int>);
@@ -39,6 +40,7 @@ class Net {
 		vector<mat> outputs;
 		vector<mat> deltas;
 
+		bool batch_start;
 
 		mat sigmoid_mat(mat m);
 		mat sigmoid_prime_mat(mat m);

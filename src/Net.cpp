@@ -12,6 +12,7 @@ int Net::max(mat &m){
 }
 
 Net::Net(){
+	this->batch_start = false;
 }
 
 //input: Nx1
@@ -31,22 +32,39 @@ int Net::feedforward(mat input){
 }
 
 void Net::backprop(mat y){
+	vector<mat> delta;
 	mat error = this->outputs.back() - y;
-	
-	this->deltas.clear();
-	this->deltas.push_back(error % this->sigmoid_prime_mat(this->outputs.back()));	
-	//%: element-wise do
-	for(int i=this->outputs.size()-2;i>0;i--){
-		mat m = this->sigmoid_prime_mat(this->inputs[i]) % (this->weights[i].t()*this->deltas.back());
-		this->deltas.push_back(m);
+	mat D = error % this->sigmoid_prime_mat(this->outputs.back());
+
+	if(!this->batch_start){
+		this->deltas.clear();
+		this->deltas.push_back(D);
+	}else{
+		this->deltas[0] += D;
 	}
+	delta.push_back(D);
+
+	//%: element-wise do
+	for(int i=this->outputs.size()-2, j=1;i>0;i--,j++){
+		mat m = this->sigmoid_prime_mat(this->inputs[i]) % (this->weights[i].t()*delta.back());
+		delta.push_back(m);
+
+		if(!this->batch_start)
+			this->deltas.push_back(m);
+		else
+			this->deltas[j] += m;
+	}
+	if(!this->batch_start)
+		this->batch_start = true;
 }
 
 void Net::update(){
+	this->batch_start = false;
 	int last = this->weights.size()-1;
+
 	for(int i=0;i<=last;i++){
-		this->weights[i] -= this->learning_rate*(this->deltas[last-i]*this->outputs[i].t());
-		this->bias[i] -= this->learning_rate*deltas[last-i];
+		this->weights[i] -= this->learning_rate*((this->deltas[last-i]/this->batch_size)*this->outputs[i].t());
+		this->bias[i] -= this->learning_rate*(this->deltas[last-i]/this->batch_size);
 	}
 }
 
