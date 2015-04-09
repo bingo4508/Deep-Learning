@@ -31,6 +31,8 @@ class Net {
 		void backprop(mat);
 		void update();
 
+		void pretrain();
+
 		void predict(string,string);
 		float report_error_rate(vector<mat>&,vector<int>&,vector<int>&);
 	private:
@@ -39,6 +41,8 @@ class Net {
 		vector<mat> inputs;
 		vector<mat> outputs;
 		vector<mat> deltas;
+		
+		vector<mat> back_bias;
 
 		bool batch_start;
 

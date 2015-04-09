@@ -15,6 +15,11 @@ Net::Net(){
 	this->batch_start = false;
 }
 
+void Net::pretrain()
+{
+	random_shuffle(train_index.begin(), train_index.end());
+}
+
 //input: Nx1
 int Net::feedforward(mat input){
 	this->outputs.clear();
@@ -120,6 +125,7 @@ void Net::load_model(vector<int> layers){
 	for(int i=1;i<layers.size();i++){
 		mat W = 2*randu<mat>(layers[i], layers[i-1])-1;
 		mat B = 2*randu<mat>(layers[i], 1)-1;
+		mat B = 2 * randu<mat>()
 		this->weights.push_back(W);
 		this->bias.push_back(B);
 	}
