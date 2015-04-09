@@ -184,23 +184,31 @@ void Net::save_model(string fname, string structure){
 	}
 }
 
-void Net::predict(string fname, string oname){
+void Net::predict(string fname, string oname, int has_answer){
 	fstream fin;
 	ifstream fi(fname.c_str(), ifstream::in);
 	ofstream fo(oname.c_str());
 
-	for(string line; getline(fi, line);){
+	int correct = 0;
+	int i=0;
+	for(string line; getline(fi, line);i++){
 		vector<string> x = split(line, " ");
-		int feature_size = x.size()-1;
+		int feature_size = x.size()-1-has_answer;
 		mat feature(feature_size, 1);
 
-		for(int i=1;i<x.size()-1;i++){
+		for(int i=1;i<x.size()-1-has_answer;i++){
 			feature(i-1, 0) = atof(x[i].c_str());
 		}
 		int p = this->feedforward(feature);
 		//Output result
-		fo << x[0] << "," << p << "\n";
+		if(has_answer && atoi(x.back().c_str())==p)
+			correct++;
+		else
+			fo << x[0] << "," << p << "\n";
 	}
+	if(has_answer)
+		printf("Accuracy: %f\n",float(correct)/i);
+
 	return;
 }
 

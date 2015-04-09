@@ -31,7 +31,7 @@ class Net {
 		void backprop(mat);
 		void update();
 
-		void predict(string,string);
+		void predict(string,string,int);
 		float report_error_rate(vector<mat>&,vector<int>&,vector<int>&);
 	private:
 		vector<mat> weights;
