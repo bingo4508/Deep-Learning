@@ -15,11 +15,6 @@ Net::Net(){
 	this->batch_start = false;
 }
 
-void Net::pretrain()
-{
-	random_shuffle(train_index.begin(), train_index.end());
-}
-
 //input: Nx1
 int Net::feedforward(mat input){
 	this->outputs.clear();
@@ -63,6 +58,73 @@ void Net::backprop(mat y){
 		this->batch_start = true;
 }
 
+void Net::initDeltaRBM(int layer)
+{
+	delta_w = zeros(this->weights[layer].n_rows, this->weights[layer].n_cols);
+	delta_b = zeros(this->bias[layer].n_rows, this->bias[layer].n_cols);
+	delta_back_b = zeros(this->back_bias[layer].n_rows, this->back_bias[layer].n_cols);
+}
+
+void Net::gibbSample(int l, mat v)
+{
+	if (l == 0)
+	{
+		vd = v;
+
+		hd = (this->weights[l] * vd) + this->bias[l];
+		hd = this->sigmoid_mat(hd);
+		for (mat::iterator i = hd.begin(); i != hd.end(); i++){
+			*i = ((double)rand()/RAND_MAX <= (*i) ? 1 : 0);
+		}
+
+		vm = (this->weights[l].t() * hd) + this->back_bias[l];
+		vm = this->gaussian_mat(vd, vm, 1);
+		for (mat::iterator i = vm.begin(); i != vm.end(); i++){
+			*i = ((double)rand() / RAND_MAX <= *i ? 1 : 0);
+		}
+
+		hm = (this->weights[l] * vm) + this->bias[l];
+		hm = this->sigmoid_mat(hm);
+		for (mat::iterator i = hm.begin(); i != hm.end(); i++){
+			*i = ((double)rand() / RAND_MAX <= *i ? 1 : 0);
+		}
+	}
+	else
+	{
+		//feed forward until the current layer
+		vd = v;
+		for (int i = 0; i < l; i++)
+		{
+			vd = (this->weights[i] * vd) + this->bias[i];
+			vd = this->sigmoid_mat(vd);
+			for (mat::iterator i = vd.begin(); i != vd.end(); i++){
+				*i = ((double)rand() / RAND_MAX <= *i ? 1 : 0);
+			}
+		}
+
+		hd = (this->weights[l] * vd) + this->bias[l];
+		hd = this->sigmoid_mat(hd);
+		for (mat::iterator i = hd.begin(); i != hd.end(); i++){
+			*i = ((double)rand() / RAND_MAX <= *i ? 1 : 0);
+		}
+
+		vm = (this->weights[l].t() * hd) + this->back_bias[l];
+		vm = this->sigmoid_mat(vm);
+		for (mat::iterator i = vm.begin(); i != vm.end(); i++){
+			*i = ((double)rand() / RAND_MAX <= *i ? 1 : 0);
+		}
+
+		hm = (this->weights[l] * vm) + this->bias[l];
+		hm = this->sigmoid_mat(hm);
+		for (mat::iterator i = hm.begin(); i != hm.end(); i++){
+			*i = ((double)rand() / RAND_MAX <= *i ? 1 : 0);
+		}
+	}
+	delta_w += hd*vd.t() - hm*vm.t();
+	delta_b += hd - hm;
+	delta_back_b += vd - vm;
+}
+
 void Net::update(){
 	this->batch_start = false;
 	int last = this->weights.size()-1;
@@ -71,6 +133,21 @@ void Net::update(){
 		this->weights[i] -= this->learning_rate*((this->deltas[last-i]/this->batch_size)*this->outputs[i].t());
 		this->bias[i] -= this->learning_rate*(this->deltas[last-i]/this->batch_size);
 	}
+}
+
+void Net::updateRBM(int l)
+{
+	this->batch_start = false;
+	this->weights[l] += this->learning_rate*(this->delta_w / this->batch_size);
+	this->bias[l] += this->learning_rate*(this->delta_b / this->batch_size);
+	this->back_bias[l] += this->learning_rate*(this->delta_back_b / this->batch_size);
+
+	cout << norm(delta_b, 1) + norm(delta_back_b) << endl;
+	//cout << bias[0];
+
+	delta_w.fill(0);
+	delta_b.fill(0);
+	delta_back_b.fill(0);
 }
 
 
@@ -93,6 +170,22 @@ mat Net::sigmoid_mat(mat m){
 mat Net::sigmoid_prime_mat(mat m){
 	for(mat::iterator i=m.begin();i!=m.end();i++){
 		*i = sigmoid_prime(*i);
+	}
+	return m;
+}
+double Net::gaussian(double x, double mean, double sigma)
+{
+	return 1 / (sigma*sqrt(2 * math::pi())) * exp(-(x - mean)*(x - mean) / (2 * sigma*sigma));
+}
+mat Net::gaussian_mat(mat m, mat mean, double sigma)
+{
+	mat::iterator i = m.begin();
+	mat::iterator im = mean.begin();
+	while (i != m.end())
+	{
+		*i = gaussian(*i, *im, sigma);
+		i++;
+		im++;
 	}
 	return m;
 }
@@ -125,9 +218,10 @@ void Net::load_model(vector<int> layers){
 	for(int i=1;i<layers.size();i++){
 		mat W = 2*randu<mat>(layers[i], layers[i-1])-1;
 		mat B = 2*randu<mat>(layers[i], 1)-1;
-		mat B = 2 * randu<mat>()
+		mat B2 = 2*randu<mat>(layers[i - 1], 1)-1;
 		this->weights.push_back(W);
 		this->bias.push_back(B);
+		this->back_bias.push_back(B2);
 	}
 }
 

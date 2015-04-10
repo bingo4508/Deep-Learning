@@ -3,7 +3,7 @@ MLDS_HW1_RELEASE_v1/
 *.pyc
 *.un~
 bin/
-script/
+output/
 input/
 VisualStudioVersion/HW1/x64/Debug/input
 VisualStudioVersion/HW1/x64/Debug/output

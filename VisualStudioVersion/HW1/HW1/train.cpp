@@ -62,6 +62,7 @@ int main(int argc, char** argv){
 	}
 
 	//Initialize neural network
+	srand(time(NULL));
 	if(argc == 7){
 		d.load_model(layers);
 	}else if(argc == 8){
@@ -82,18 +83,16 @@ int main(int argc, char** argv){
 	vector<int> train_index(d.index.begin()+d.index.size()*valid_ratio, d.index.end());
 
 	//Pre-training
-	for (int layer = 0; layer < layers.size - 1; layer++)
+	for (int layer = 0; layer < layers.size() - 1; layer++)
 	{
+		d.initDeltaRBM(layer);
 		for (int epoch = 0; epoch<max_epoch; epoch++){
 			random_shuffle(train_index.begin(), train_index.end());
 			int j = 0;
 			for (vector<int>::iterator it = train_index.begin(); it != train_index.end(); ++it, ++j){
-				mat y = zeros<mat>(layers.back(), 1);
-				d.feedforward(d.data[*it]);
-				y(d.label[*it], 0) = 1;
-				d.backprop(y);
+				d.gibbSample(layer, d.data[*it]);
 				if ((j % d.batch_size == 0) && j != 0)
-					d.update();
+					d.updateRBM(layer);
 			}
 		}
 	}

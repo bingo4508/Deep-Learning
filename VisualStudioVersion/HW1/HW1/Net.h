@@ -31,7 +31,9 @@ class Net {
 		void backprop(mat);
 		void update();
 
-		void pretrain();
+		void gibbSample(int, mat);
+		void updateRBM(int layer);
+		void initDeltaRBM(int layer);
 
 		void predict(string,string);
 		float report_error_rate(vector<mat>&,vector<int>&,vector<int>&);
@@ -41,6 +43,15 @@ class Net {
 		vector<mat> inputs;
 		vector<mat> outputs;
 		vector<mat> deltas;
+
+		mat vd;
+		mat hd;
+		mat vm;
+		mat hm;
+
+		mat delta_w;
+		mat delta_b;
+		mat delta_back_b;
 		
 		vector<mat> back_bias;
 
@@ -50,5 +61,7 @@ class Net {
 		mat sigmoid_prime_mat(mat m);
 		double sigmoid(double x);
 		double sigmoid_prime(double x);
+		double gaussian(double x, double mean, double sigma);
+		mat gaussian_mat(mat x, mat mean, double sigma);
 		int max(mat&);
 };
