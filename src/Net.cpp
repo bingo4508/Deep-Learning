@@ -188,6 +188,7 @@ void Net::predict(string fname, string oname, int has_answer){
 	fstream fin;
 	ifstream fi(fname.c_str(), ifstream::in);
 	ofstream fo(oname.c_str());
+	ofstream fo2((oname+".out_layer").c_str());
 
 	int correct = 0;
 	int i=0;
@@ -203,8 +204,12 @@ void Net::predict(string fname, string oname, int has_answer){
 		//Output result
 		if(has_answer && atoi(x.back().c_str())==p)
 			correct++;
-		else
-			fo << x[0] << "," << p << "\n";
+		fo << x[0] << "," << p << "\n";
+		mat m = this->outputs.back();
+		fo2 << x[0] << " ";
+		for(mat::iterator i=m.begin();i!=m.end();i++)
+		    fo2 << *i << " ";
+		fo2 << "\n";
 	}
 	if(has_answer)
 		printf("Accuracy: %f\n",float(correct)/i);
