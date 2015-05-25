@@ -1,22 +1,22 @@
-#include "Net.h"
+#include "nnet.h"
 
 void print_size(mat &m){
 	printf("(%d,%d)\n",m.n_rows,m.n_cols);
 }
 
 //m: Nx1 matrix
-int Net::max(mat &m){
+int NNet::max(mat &m){
 	uword index;
 	m.max(index);
 	return index;
 }
 
-Net::Net(){
+NNet::NNet(){
 	this->batch_start = false;
 }
 
 //input: Nx1
-int Net::feedforward(mat input){
+int NNet::feedforward(mat input){
 	this->outputs.clear();
 	this->inputs.clear();
 	this->inputs.push_back(input);
@@ -31,7 +31,7 @@ int Net::feedforward(mat input){
 	return this->max(this->outputs.back());	
 }
 
-void Net::backprop(mat y){
+void NNet::backprop(mat y){
 	vector<mat> delta;
 	mat error = this->outputs.back() - y;
 	mat D = error % this->sigmoid_prime_mat(this->outputs.back());
@@ -58,7 +58,7 @@ void Net::backprop(mat y){
 		this->batch_start = true;
 }
 
-void Net::update(){
+void NNet::update(){
 	this->batch_start = false;
 	int last = this->weights.size()-1;
 
@@ -70,22 +70,22 @@ void Net::update(){
 
 
 /***********************************************************************/
-double Net::sigmoid(double x){
+double NNet::sigmoid(double x){
 	return 1/(1+exp(-x));
 }
 
-double Net::sigmoid_prime(double x){
+double NNet::sigmoid_prime(double x){
 	double y = sigmoid(x);
 	return y*(1.0-y);
 }
 
-mat Net::sigmoid_mat(mat m){
+mat NNet::sigmoid_mat(mat m){
 	for(mat::iterator i=m.begin();i!=m.end();i++){
 		*i = sigmoid(*i);
 	}
 	return m;
 }
-mat Net::sigmoid_prime_mat(mat m){
+mat NNet::sigmoid_prime_mat(mat m){
 	for(mat::iterator i=m.begin();i!=m.end();i++){
 		*i = sigmoid_prime(*i);
 	}
@@ -93,7 +93,7 @@ mat Net::sigmoid_prime_mat(mat m){
 }
 
 //Format: sample_name feature1(double) feature2 ... label(int)
-void Net::load_train_data(string fname, vector<mat> &data, vector<int> &label, vector<int> &index){
+void NNet::load_train_data(string fname, vector<mat> &data, vector<int> &label, vector<int> &index){
 	fstream fin;
 	ifstream input(fname.c_str(), ifstream::in);
 
@@ -115,7 +115,7 @@ void Net::load_train_data(string fname, vector<mat> &data, vector<int> &label, v
 }
 
 
-void Net::load_model(vector<int> layers){
+void NNet::load_model(vector<int> layers){
 	//Initialize weights
 	for(int i=1;i<layers.size();i++){
 		mat W = 2*randu<mat>(layers[i], layers[i-1])-1;
@@ -125,7 +125,7 @@ void Net::load_model(vector<int> layers){
 	}
 }
 
-void Net::load_model(string fname){
+void NNet::load_model(string fname){
 	ifstream fi(fname.c_str(), ifstream::in);
 	string line;
 	vector<int> layers;
@@ -162,7 +162,7 @@ void Net::load_model(string fname){
 	}
 }
 
-void Net::save_model(string fname, string structure){
+void NNet::save_model(string fname, string structure){
 	ofstream fo(fname.c_str());
 
 	fo << structure << "\n";
@@ -184,7 +184,7 @@ void Net::save_model(string fname, string structure){
 	}
 }
 
-void Net::predict(string fname, string oname, int has_answer){
+void NNet::predict(string fname, string oname, int has_answer){
 	fstream fin;
 	ifstream fi(fname.c_str(), ifstream::in);
 	ofstream fo(oname.c_str());
@@ -217,7 +217,7 @@ void Net::predict(string fname, string oname, int has_answer){
 	return;
 }
 
-float Net::report_error_rate(vector<mat>& data, vector<int> &label, vector<int> &index){
+float NNet::report_error_rate(vector<mat>& data, vector<int> &label, vector<int> &index){
 	float err = 0;
 	for(vector<int>::iterator it=index.begin();it!=index.end();++it){
 		int p = this->feedforward(data[*it]);
