@@ -4,6 +4,7 @@
 *.swp
 
 bin/
+build/
 data/
 output/
 input/
