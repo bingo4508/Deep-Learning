@@ -22,6 +22,7 @@ class RNNet: public NNet{
 	public:
 		map<string, mat> map_vec;
 		map<string, int> map_class;
+		map<int, string> map_class2;
 		vector<string> data_text;
 
                 void feedforward(mat);
@@ -31,7 +32,7 @@ class RNNet: public NNet{
 		void load_model(vector<int>);
 		void load_model(string);
 		void save_model(string, string);
-		void predict(string, string, int);
+		void predict(string, string, string, string, map<string, mat>&, int, char);
 		void load_train_data(string, string, string, map<string, mat>&, vector<string>&, vector<int>&);
 		
 

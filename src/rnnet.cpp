@@ -4,6 +4,33 @@
 
 //#define DEBUG
 
+map<string, mat> load_word_vector(ifstream &input_vec, int n_feature){
+	map<string,mat> map_vec;
+	string line;
+
+        for(; getline(input_vec, line);){
+                vector<string> x = split(line, " ");
+                mat feature(n_feature, 1);
+
+                for(int i=1;i<x.size()-1;i++){
+                        feature(i-1, 0) = atof(x[i].c_str());
+                }
+                map_vec[x[0]] = feature;
+        }
+	return map_vec;
+}
+
+void load_word_class(ifstream &input_class, map<string, int> &map_class, map<int, string> &map_class2){
+	string line;
+
+        for(int i=0; getline(input_class, line);i++){
+                map_class[line] = i;
+		map_class2[i] = line;
+        }
+	return;
+}
+
+
 //input: Nx1
 void RNNet::feedforward(mat input){
 #ifdef DEBUG
@@ -184,23 +211,13 @@ void RNNet::load_train_data(string ftext, string fvec, string fclass, map<string
         n_feature = atoi(x[1].c_str());
 
 	// word vectors
-        for(; getline(input_vec, line);){
-                vector<string> x = split(line, " ");
-                mat feature(n_feature, 1);
-
-                for(int i=1;i<x.size()-1;i++){
-                        feature(i-1, 0) = atof(x[i].c_str());
-                }
-                map_vec[x[0]] = feature;
-        }
+	map_vec = load_word_vector(input_vec, n_feature);
+	// class of words
+	load_word_class(input_class, map_class, map_class2);
 	// text
 	for(; getline(input_text, line);){
 		vector<string> x = split(line, " ");
 		data_text.insert(data_text.end(), x.begin(), x.end());
-	}
-	// class of words
-	for(int i=0; getline(input_class, line);i++){
-		map_class[line] = i;
 	}
 
         for(int i=0;i<data_text.size();i++){
@@ -335,18 +352,68 @@ void RNNet::save_model(string fname, string structure){
 	}
 }
 
-void RNNet::predict(string fname, string oname, int has_answer){
-	fstream fin;
+void RNNet::predict(string fname, string fvec, string fclass, string oname, map<string, mat> &map_vec, int n_choice, char symbol_choice){
+	ifstream input_vec(fvec.c_str(), ifstream::in);
+	ifstream input_class(fclass.c_str(), ifstream::in);
 	ifstream fi(fname.c_str(), ifstream::in);
 	ofstream fo(oname.c_str());
+	string line;
 
-	int correct = 0;
-	int i=0;
-	for(string line; getline(fi, line);i++){
-		//TODO
+        getline(input_vec, line);
+        vector<string> x = split(line, " ");
+        int n_feature = atoi(x[1].c_str());
+
+	map_vec = load_word_vector(input_vec, n_feature);
+	load_word_class(input_class, map_class, map_class2);
+
+	// predict
+	// format: a b c d [e] f g
+	vector<string> choices;
+	int index_choice;
+
+	for(int i=0; getline(fi, line);i++){
+		x = split(line, " ");
+		for(int j=0; j<x.size(); j++){
+			if(x[j][0] == symbol_choice){
+				index_choice = j;
+				choices.push_back(x[j].substr(1, x[j].length()-2));
+				break;
+			}				
+		}
+		// Start predict and choose best guess
+		if((i+1) % n_choice == 0){
+			printf("%d \n", (i+1)/n_choice);
+			fflush(stdout);
+			double max_p = -1;
+			int ans;
+			// Check each choie and see whose probability is max
+			for(int j=0; j<n_choice; j++){
+				double p = 1;
+				x[index_choice] = choices[j];
+				mat input;
+				int out;
+				// Forward a whole sentance
+				for(int k=0; k<x.size()-1; k++){
+					input = map_vec[x[k]];
+					if(input.n_rows == 0)
+						input = zeros<mat>(n_feature, 1);	//Others has no vector
+					this->feedforward(input);
+					if(map_class.find(x[k+1]) != map_class.end()){
+						out = map_class[x[k+1]];
+					}else{
+						out = this->outputs.back().n_rows-1;
+					}
+					p *= this->outputs.back()(out,0);
+				}
+				if(p > max_p){
+					max_p = p;
+					ans = j;
+				}
+			}
+			fo << ans << "\n";
+			choices.clear();		
+		}
 	}
-	if(has_answer)
-		printf("Accuracy: %f\n",float(correct)/i);
 
 	return;
 }

@@ -25,7 +25,7 @@ int main(int argc, char** argv){
         //ex: ./run 0.01 5-4-3 300 train_file_name output_model_name model_name
         if(argc < 9){
                 printf("Usage:\n");
-                printf("./train learning_rate(0.01) learning_rate_decay(0.8) batch_size(10) rnn_depth(5) structure(5-4-3) max_epoch(100) train_file output_model [load_model]\n");
+                printf("./train learning_rate(0.01) learning_rate_decay(0.8) batch_size(10) structure(5-4-3) max_epoch(100) rnn_depth(5) train_file output_model [load_model]\n");
                 return 0;
         }else{
                 d.learning_rate = atof(argv[1]);
