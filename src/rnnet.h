@@ -33,6 +33,7 @@ class RNNet: public NNet{
 		void save_model(string, string);
 		void predict(string, string, int);
 		void load_train_data(string, string, string, map<string, mat>&, vector<string>&, vector<int>&);
+		
 
 		int back_t;
 	private:
@@ -41,6 +42,16 @@ class RNNet: public NNet{
 		vector<deque<mat> > mem_deltas;
 		vector<deque<mat> > mem_inputs;
 		vector<deque<mat> > mem_outputs;
+
+	protected:
+		/* Activation function */
+		mat ReLU_mat(mat m);
+		mat ReLU_prime_mat(mat m);
+		double ReLU(double x);
+		double ReLU_prime(double x);
+
+		mat softmax_mat(mat m);
+
 };
 
 #endif

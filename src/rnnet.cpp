@@ -14,13 +14,13 @@ void RNNet::feedforward(mat input){
 	int i;
         for(i=0;i<this->weights.size()-1;i++){
                 mat Z = (this->weights[i] * this->outputs[i])+(this->mem_weights[i]*this->mem[i].back())+ this->bias[i];
-                mat A = this->sigmoid_mat(Z);
+                mat A = this->ReLU_mat(Z);
                 this->inputs.push_back(Z);
                 this->outputs.push_back(A);
         }
         // Output layer
         mat Z = (this->weights[i] * this->outputs[i]) + this->bias[i];
-        mat A = this->sigmoid_mat(Z);
+        mat A = this->softmax_mat(Z);
         this->inputs.push_back(Z);
         this->outputs.push_back(A);
 
@@ -33,7 +33,8 @@ void RNNet::backprop(mat y){
 #endif
         vector<mat> delta;
         mat error = this->outputs.back() - y;
-        mat D = error % this->sigmoid_prime_mat(this->inputs.back());
+        //mat D = error % this->ReLU_prime_mat(this->inputs.back());
+		mat D = error; // softmax-version delta computation is sooooo simple!
 
         if(!this->batch_start){
                 this->deltas.clear();
@@ -44,7 +45,7 @@ void RNNet::backprop(mat y){
         delta.push_back(D);
         //%: element-wise dot
         for(int i=this->outputs.size()-2, j=1;i>0;i--,j++){
-                mat m = this->sigmoid_prime_mat(this->inputs[i]) % (this->weights[i].t()*delta.back());
+                mat m = this->ReLU_prime_mat(this->inputs[i]) % (this->weights[i].t()*delta.back());
                 delta.push_back(m);
 
 		// Propagate delta to memory deltas
@@ -52,7 +53,7 @@ void RNNet::backprop(mat y){
 		this->mem_deltas[i-1].push_back(m);
 		int size = this->mem_inputs[i-1].size()-1;
 		for(int k=0; k<=size; k++){
-			mat mm = this->sigmoid_prime_mat(this->mem_inputs[i-1][size-k]) % (this->mem_weights[i-1] * this->mem_deltas[i-1].back());
+			mat mm = this->ReLU_prime_mat(this->mem_inputs[i-1][size-k]) % (this->mem_weights[i-1] * this->mem_deltas[i-1].back());
 			this->mem_deltas[i-1].push_back(mm);
 		}
 		this->mem_deltas[i-1].pop_front();	//pop current delta
@@ -112,6 +113,42 @@ void RNNet::update(){
 }
 
 /***********************************************************************/
+double RNNet::ReLU(double x)
+{
+	return x > 0 ? x : 0;
+}
+double RNNet::ReLU_prime(double x)
+{
+	return x > 0 ? 1 : 0;
+}
+mat RNNet::ReLU_mat(mat m)
+{
+	for (mat::iterator i = m.begin(); i != m.end(); i++){
+		*i = ReLU(*i);
+	}
+	return m;
+}
+mat RNNet::ReLU_prime_mat(mat m)
+{
+	for (mat::iterator i = m.begin(); i != m.end(); i++){
+		*i = ReLU_prime(*i);
+	}
+	return m;
+}
+
+mat RNNet::softmax_mat(mat m)
+{
+	double total = 0;
+	for (mat::iterator i = m.begin(); i != m.end(); i++){
+		*i = exp(*i);
+		total += *i;
+	}
+	for (mat::iterator i = m.begin(); i != m.end(); i++){
+		*i /= total;
+	}
+	return m;
+}
+
 void RNNet::load_train_data(string ftext, string fvec, string fclass, map<string, mat> &map_vec, vector<string> &data_text, vector<int> &index){
         ifstream input_vec(fvec.c_str(), ifstream::in);
         ifstream input_text(ftext.c_str(), ifstream::in);
@@ -291,4 +328,5 @@ void RNNet::predict(string fname, string oname, int has_answer){
 
 	return;
 }
+
 
