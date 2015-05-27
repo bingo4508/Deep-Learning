@@ -1,5 +1,7 @@
 #include "nnet.h"
 
+#define SOFTMAX_RELU
+
 void print_size(mat &m){
 	printf("(%d,%d)\n",m.n_rows,m.n_cols);
 }
@@ -21,20 +23,37 @@ int NNet::feedforward(mat input){
 	this->inputs.clear();
 	this->inputs.push_back(input);
 	this->outputs.push_back(input);
-
-	for(int i=0;i<this->weights.size();i++){
+	int i;
+	for(i=0;i<this->weights.size()-1;i++){
 		mat Z = (this->weights[i] * this->outputs[i]) + this->bias[i];
 		this->inputs.push_back(Z);
+#ifdef SOFTMAX_RELU
+		mat A = this->ReLU_mat(Z);
+#else
 		mat A = this->sigmoid_mat(Z);
+#endif
 		this->outputs.push_back(A);
 	}
+	//output layer
+	mat Z = (this->weights[i] * this->outputs[i]) + this->bias[i];
+	this->inputs.push_back(Z);
+#ifdef SOFTMAX_RELU
+	mat A = this->ReLU_mat(Z);
+#else
+	mat A = this->sigmoid_mat(Z);
+#endif
+	this->outputs.push_back(A);
 	return this->max(this->outputs.back());	
 }
 
 void NNet::backprop(mat y){
 	vector<mat> delta;
 	mat error = this->outputs.back() - y;
-	mat D = error % this->sigmoid_prime_mat(this->outputs.back());
+#ifdef SOFTMAX_RELU
+	mat D = error;
+#else
+	mat D = error % this->ReLU_prime_mat(this->inputs.back());
+#endif
 
 	if(!this->batch_start){
 		this->deltas.clear();
@@ -46,7 +65,7 @@ void NNet::backprop(mat y){
 
 	//%: element-wise do
 	for(int i=this->outputs.size()-2, j=1;i>0;i--,j++){
-		mat m = this->sigmoid_prime_mat(this->inputs[i]) % (this->weights[i].t()*delta.back());
+		mat m = this->ReLU_prime_mat(this->inputs[i]) % (this->weights[i].t()*delta.back());
 		delta.push_back(m);
 
 		if(!this->batch_start)
@@ -88,6 +107,42 @@ mat NNet::sigmoid_mat(mat m){
 mat NNet::sigmoid_prime_mat(mat m){
 	for(mat::iterator i=m.begin();i!=m.end();i++){
 		*i = sigmoid_prime(*i);
+	}
+	return m;
+}
+
+double NNet::ReLU(double x)
+{
+	return x > 0 ? x : 0;
+}
+double NNet::ReLU_prime(double x)
+{
+	return x > 0 ? 1 : 0;
+}
+mat NNet::ReLU_mat(mat m)
+{
+	for (mat::iterator i = m.begin(); i != m.end(); i++){
+		*i = ReLU(*i);
+	}
+	return m;
+}
+mat NNet::ReLU_prime_mat(mat m)
+{
+	for (mat::iterator i = m.begin(); i != m.end(); i++){
+		*i = ReLU_prime(*i);
+	}
+	return m;
+}
+
+mat NNet::softmax_mat(mat m)
+{
+	double total = 0;
+	for (mat::iterator i = m.begin(); i != m.end(); i++){
+		*i = exp(*i);
+		total += *i;
+	}
+	for (mat::iterator i = m.begin(); i != m.end(); i++){
+		*i /= total;
 	}
 	return m;
 }
