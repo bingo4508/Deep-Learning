@@ -23,9 +23,9 @@ int main(int argc, char** argv){
 
         //Set parameters
         //ex: ./run 0.01 5-4-3 300 train_file_name output_model_name model_name
-        if(argc < 8){
+        if(argc < 9){
                 printf("Usage:\n");
-                printf("./train learning_rate(0.01) learning_rate_decay(0.8) batch_size(10) structure(5-4-3) max_epoch(100) train_file output_model [load_model]\n");
+                printf("./train learning_rate(0.01) learning_rate_decay(0.8) batch_size(10) rnn_depth(5) structure(5-4-3) max_epoch(100) train_file output_model [load_model]\n");
                 return 0;
         }else{
                 d.learning_rate = atof(argv[1]);
@@ -39,17 +39,17 @@ int main(int argc, char** argv){
                 }
 		layers[layers.size()-1];
                 max_epoch = atoi(argv[5]);
-                train_fname.assign(argv[6]);
-                output_model.assign(argv[7]);
-		d.back_t = 5;
+		d.back_t = atoi(argv[6]);
+                train_fname.assign(argv[7]);
+                output_model.assign(argv[8]);
         }
         //Initialize neural network
-        if(argc == 8){
+        if(argc == 9){
 		puts("Initializing model...");
                 d.load_model(layers);
-        }else if(argc == 9){
-		printf("Load model from %s\n",argv[7]);
-                string m_name(argv[7]);
+        }else if(argc == 10){
+		printf("Load model from %s\n",argv[9]);
+                string m_name(argv[9]);
                 d.load_model(m_name);
         }else{
                 printf("wrong parameters\n");
@@ -70,11 +70,12 @@ int main(int argc, char** argv){
         for(int epoch=0;epoch<max_epoch;epoch++){
                 t1 = clock();
 		printf("eopch %d: ", epoch);
-		int ten_percent = train_index.size()*0.1;
+		int one_percent = train_index.size()*0.01;
                 for(int i=0;i<train_index.size()-1;i++){
-			if(i % ten_percent == 0){
+			if(i % one_percent == 0){
 				printf(".");
 				fflush(stdout);
+		                d.save_model(output_model, structure);
 			}
 			if(d.map_vec.find(d.data_text[train_index[i]]) != d.map_vec.end() &&
 			   d.map_vec.find(d.data_text[train_index[i+1]]) != d.map_vec.end()){

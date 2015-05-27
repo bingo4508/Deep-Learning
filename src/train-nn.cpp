@@ -44,7 +44,7 @@ int main(int argc, char** argv){
         if(argc == 8){
                 d.load_model(layers);
         }else if(argc == 9){
-                string m_name(argv[7]);
+                string m_name(argv[8]);
                 d.load_model(m_name);
         }else{
                 printf("wrong parameters\n");
