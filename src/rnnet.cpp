@@ -1,6 +1,7 @@
 #include "rnnet.h"
 
-#define SOFTMAX_RELU
+#define SOFTMAX
+//#define RELU
 
 //#define DEBUG
 
@@ -17,7 +18,7 @@ void RNNet::feedforward(mat input){
 	int i;
         for(i=0;i<this->weights.size()-1;i++){
                 mat Z = (this->weights[i] * this->outputs[i])+(this->mem_weights[i]*this->mem[i].back())+ this->bias[i];
-#ifdef SOFTMAX_RELU
+#ifdef RELU
                 mat A = this->ReLU_mat(Z);
 #else
 				mat A = this->sigmoid_mat(Z);
@@ -27,7 +28,7 @@ void RNNet::feedforward(mat input){
         }
         // Output layer
         mat Z = (this->weights[i] * this->outputs[i]) + this->bias[i];
-#ifdef SOFTMAX_RELU
+#ifdef SOFTMAX
         mat A = this->softmax_mat(Z);
 #else
 		mat A = this->sigmoid_mat(Z);
@@ -44,10 +45,10 @@ void RNNet::backprop(mat y){
 #endif
         vector<mat> delta;
         mat error = this->outputs.back() - y;
-#ifdef SOFTMAX_RELU
+#ifdef SOFTMAX
 		mat D = error;
 #else
-		mat D = error % this->ReLU_prime_mat(this->inputs.back());
+		mat D = error % this->sigmoid_prime_mat(this->inputs.back());
 #endif
 
         if(!this->batch_start){
@@ -59,7 +60,7 @@ void RNNet::backprop(mat y){
         delta.push_back(D);
         //%: element-wise dot
         for(int i=this->outputs.size()-2, j=1;i>0;i--,j++){
-#ifdef SOFTMAX_RELU
+#ifdef RELU
                 mat m = this->ReLU_prime_mat(this->inputs[i]) % (this->weights[i].t()*delta.back());
 #else
 				mat m = this->sigmoid_prime_mat(this->inputs[i]) % (this->weights[i].t()*delta.back());
@@ -71,7 +72,7 @@ void RNNet::backprop(mat y){
 		this->mem_deltas[i-1].push_back(m);
 		int size = this->mem_inputs[i-1].size()-1;
 		for(int k=0; k<=size; k++){
-#ifdef SOFTMAX_RELU
+#ifdef RELU
 			mat mm = this->ReLU_prime_mat(this->mem_inputs[i-1][size-k]) % (this->mem_weights[i-1] * this->mem_deltas[i-1].back());
 #else
 			mat mm = this->sigmoid_prime_mat(this->mem_inputs[i-1][size-k]) % (this->mem_weights[i-1] * this->mem_deltas[i-1].back());

@@ -1,6 +1,7 @@
 #include "nnet.h"
 
-#define SOFTMAX_RELU
+#define SOFTMAX
+//#define RELU
 
 void print_size(mat &m){
 	printf("(%d,%d)\n",m.n_rows,m.n_cols);
@@ -27,7 +28,7 @@ int NNet::feedforward(mat input){
 	for(i=0;i<this->weights.size()-1;i++){
 		mat Z = (this->weights[i] * this->outputs[i]) + this->bias[i];
 		this->inputs.push_back(Z);
-#ifdef SOFTMAX_RELU
+#ifdef RELU
 		mat A = this->ReLU_mat(Z);
 #else
 		mat A = this->sigmoid_mat(Z);
@@ -37,8 +38,8 @@ int NNet::feedforward(mat input){
 	//output layer
 	mat Z = (this->weights[i] * this->outputs[i]) + this->bias[i];
 	this->inputs.push_back(Z);
-#ifdef SOFTMAX_RELU
-	mat A = this->ReLU_mat(Z);
+#ifdef SOFTMAX
+	mat A = this->softmax_mat(Z);
 #else
 	mat A = this->sigmoid_mat(Z);
 #endif
@@ -49,10 +50,10 @@ int NNet::feedforward(mat input){
 void NNet::backprop(mat y){
 	vector<mat> delta;
 	mat error = this->outputs.back() - y;
-#ifdef SOFTMAX_RELU
+#ifdef SOFTMAX
 	mat D = error;
 #else
-	mat D = error % this->ReLU_prime_mat(this->inputs.back());
+	mat D = error % this->sigmoid_prime_mat(this->inputs.back());
 #endif
 
 	if(!this->batch_start){
@@ -65,7 +66,11 @@ void NNet::backprop(mat y){
 
 	//%: element-wise do
 	for(int i=this->outputs.size()-2, j=1;i>0;i--,j++){
+#ifdef RELU
 		mat m = this->ReLU_prime_mat(this->inputs[i]) % (this->weights[i].t()*delta.back());
+#else
+		mat m = this->sigmoid_prime_mat(this->inputs[i]) % (this->weights[i].t()*delta.back());
+#endif
 		delta.push_back(m);
 
 		if(!this->batch_start)
