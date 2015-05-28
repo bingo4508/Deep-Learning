@@ -70,9 +70,9 @@ int main(int argc, char** argv){
         for(int epoch=0;epoch<max_epoch;epoch++){
                 t1 = clock();
 		printf("eopch %d: ", epoch);
-		int one_percent = train_index.size()*0.01;
+		int ten_percent = train_index.size()*0.1;
                 for(int i=0;i<train_index.size()-1;i++){
-			if(i % one_percent == 0){
+			if(i % ten_percent == 0){
 				printf(".");
 				fflush(stdout);
 		                d.save_model(output_model, structure);

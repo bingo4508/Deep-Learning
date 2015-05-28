@@ -358,11 +358,19 @@ void RNNet::predict(string fname, string fvec, string fclass, string oname, map<
 	ifstream fi(fname.c_str(), ifstream::in);
 	ofstream fo(oname.c_str());
 	string line;
+	int n_lines=0;
 
+	// Get number of lines
+    	while(getline(fi, line))
+        	++n_lines;
+	fi.close();
+	fi.open(fname.c_str(), ifstream::in);
+	int ten_percent = n_lines*0.1;
+
+	// load vector and class
         getline(input_vec, line);
         vector<string> x = split(line, " ");
         int n_feature = atoi(x[1].c_str());
-
 	map_vec = load_word_vector(input_vec, n_feature);
 	load_word_class(input_class, map_class, map_class2);
 
@@ -372,6 +380,12 @@ void RNNet::predict(string fname, string fvec, string fclass, string oname, map<
 	int index_choice;
 
 	for(int i=0; getline(fi, line);i++){
+		// print progress
+		if(i % ten_percent == 0){
+			printf(".");
+			fflush(stdout);
+		}
+
 		x = split(line, " ");
 		for(int j=0; j<x.size(); j++){
 			if(x[j][0] == symbol_choice){
@@ -382,8 +396,6 @@ void RNNet::predict(string fname, string fvec, string fclass, string oname, map<
 		}
 		// Start predict and choose best guess
 		if((i+1) % n_choice == 0){
-			printf("%d \n", (i+1)/n_choice);
-			fflush(stdout);
 			double max_p = -1;
 			int ans;
 			// Check each choie and see whose probability is max
@@ -396,7 +408,7 @@ void RNNet::predict(string fname, string fvec, string fclass, string oname, map<
 				for(int k=0; k<x.size()-1; k++){
 					input = map_vec[x[k]];
 					if(input.n_rows == 0)
-						input = zeros<mat>(n_feature, 1);	//Others has no vector
+						input = zeros<mat>(n_feature, 1);	//Others has no vector, so why not also zeros...
 					this->feedforward(input);
 					if(map_class.find(x[k+1]) != map_class.end()){
 						out = map_class[x[k+1]];
