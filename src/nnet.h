@@ -61,15 +61,14 @@ class NNet {
                 double sigmoid(double x);
                 double sigmoid_prime(double x);
 
+                mat ReLU_mat(mat m);
+                mat ReLU_prime_mat(mat m);
+                double ReLU(double x);
+                double ReLU_prime(double x);
+
+                mat softmax_mat(mat m);
+
                 int max(mat&);
-
-		private:
-				mat ReLU_mat(mat m);
-				mat ReLU_prime_mat(mat m);
-				double ReLU(double x);
-				double ReLU_prime(double x);
-
-				mat softmax_mat(mat m);
 };
 
 #endif
