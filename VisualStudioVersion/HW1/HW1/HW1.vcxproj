@@ -18,13 +18,27 @@
       <Platform>x64</Platform>
     </ProjectConfiguration>
   </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="nnet.cpp" />
+    <ClCompile Include="predict-rnn.cpp" />
+    <ClCompile Include="predict.cpp" />
+    <ClCompile Include="rnnet.cpp" />
+    <ClCompile Include="train-nn.cpp" />
+    <ClCompile Include="train-rnn.cpp" />
+    <ClCompile Include="utility.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="nnet.h" />
+    <ClInclude Include="rnnet.h" />
+    <ClInclude Include="utility.h" />
+  </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{CC65A264-2711-48C1-9F6E-B4F08BE6213F}</ProjectGuid>
     <RootNamespace>HW1</RootNamespace>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
-    <ConfigurationType>Application</ConfigurationType>
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v120</PlatformToolset>
     <CharacterSet>MultiByte</CharacterSet>
@@ -36,7 +50,7 @@
     <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
-    <ConfigurationType>Application</ConfigurationType>
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>v120</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
@@ -76,7 +90,7 @@
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>blas_win64_MT.lib;lapack_win64_MT.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>blas_win64_MT.lib;lapack_win64_MT.lib</AdditionalDependencies>
       <AdditionalLibraryDirectories>D:\OneDrive\SourceTree\DeepLearning2015\HW1\VisualStudioVersion\HW1\lib\armadillo-4.650.4\examples\lib_win64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
@@ -85,13 +99,13 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>D:\OneDrive\SourceTree\DeepLearning2015\HW1\VisualStudioVersion\HW1\lib\armadillo-4.650.4\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>D:\OneDrive\SourceTree\DeepLearning2015\HW1\VisualStudioVersion\HW1\lib\armadillo-4.650.4\include;D:\OneDrive\SourceTree\DeepLearning2015\HW1\VisualStudioVersion\HW1\lib\openBlas\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>blas_win64_MT.lib;lapack_win64_MT.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>D:\OneDrive\SourceTree\DeepLearning2015\HW1\VisualStudioVersion\HW1\lib\armadillo-4.650.4\examples\lib_win64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>blas_win64_MT.lib;lapack_win64_MT.lib</AdditionalDependencies>
+      <AdditionalLibraryDirectories>D:\OneDrive\SourceTree\DeepLearning2015\HW1\VisualStudioVersion\HW1\x64\Release;D:\OneDrive\SourceTree\DeepLearning2015\HW1\VisualStudioVersion\HW1\lib\armadillo-4.650.4\examples\lib_win64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -101,11 +115,15 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
+      <AdditionalIncludeDirectories>D:\OneDrive\SourceTree\DeepLearning2015\HW1\VisualStudioVersion\HW1\lib\armadillo-4.650.4\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
+      <AdditionalLibraryDirectories>D:\OneDrive\SourceTree\DeepLearning2015\HW1\VisualStudioVersion\HW1\lib\armadillo-4.650.4\examples\lib_win64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>blas_win64_MT.lib;lapack_win64_MT.lib</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -115,27 +133,17 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>D:\OneDrive\SourceTree\DeepLearning2015\HW1\VisualStudioVersion\HW1\lib\armadillo-4.650.4\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>D:\OneDrive\SourceTree\DeepLearning2015\HW1\VisualStudioVersion\HW1\lib\armadillo-4.650.4\include;D:\OneDrive\SourceTree\DeepLearning2015\HW1\VisualStudioVersion\HW1\lib\openBlas\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalLibraryDirectories>D:\OneDrive\SourceTree\DeepLearning2015\HW1\VisualStudioVersion\HW1\lib\armadillo-4.650.4\examples\lib_win64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>blas_win64_MT.lib;lapack_win64_MT.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>D:\OneDrive\SourceTree\DeepLearning2015\HW1\VisualStudioVersion\HW1\x64\Release;D:\OneDrive\SourceTree\DeepLearning2015\HW1\VisualStudioVersion\HW1\lib\armadillo-4.650.4\examples\lib_win64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>blas_win64_MT.lib;lapack_win64_MT.lib</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
-  <ItemGroup>
-    <ClCompile Include="Net.cpp" />
-    <ClCompile Include="predict.cpp" />
-    <ClCompile Include="train.cpp" />
-    <ClCompile Include="utility.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="Net.h" />
-    <ClInclude Include="utility.h" />
-  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
