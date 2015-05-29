@@ -1,0 +1,36 @@
+﻿已經開始建置於 2015/5/29 上午 06:10:18。
+     1>節點 2 (Build 目標) 上的專案 "D:\OneDrive\SourceTree\DeepLearning2015\HW1\VisualStudioVersion\HW1\HW1\HW1.vcxproj"。
+     1>ClCompile:
+         C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\x86_amd64\CL.exe /c /I"D:\OneDrive\SourceTree\DeepLearning2015\HW1\VisualStudioVersion\HW1\lib\armadillo-4.650.4\include" /ID:\OneDrive\SourceTree\DeepLearning2015\HW1\VisualStudioVersion\HW1\lib\openBlas\include /Zi /nologo /W3 /WX- /sdl /O2 /Oi /GL /D _CRT_SECURE_NO_WARNINGS /D _MBCS /Gm- /EHsc /MD /GS /Gy /fp:precise /Zc:wchar_t /Zc:forScope /Fo"x64\Release\\" /Fd"x64\Release\vc120.pdb" /Gd /TP /errorReport:prompt "train-rnn.cpp"
+         train-rnn.cpp
+     1>train-rnn.cpp(68): warning C4244: '引數' : 將 'float' 轉換為 '__int64'，由於類型不同，可能導致資料遺失
+     1>train-rnn.cpp(69): warning C4244: '引數' : 將 'float' 轉換為 '__int64'，由於類型不同，可能導致資料遺失
+     1>train-rnn.cpp(76): warning C4244: '正在初始化' : 將 'double' 轉換為 'int'，由於類型不同，可能導致資料遺失
+     1>train-rnn.cpp(100): warning C4018: '<' : signed/unsigned 不相符
+     1>train-rnn.cpp(108): warning C4258: 'i' : 已忽略來自 for 迴圈的定義; 使用封閉範圍的定義
+                 train-rnn.cpp(100) : 已忽略 'i' 的定義
+                 train-rnn.cpp(78) : 已使用 'i' 的定義
+     1>train-rnn.cpp(120): warning C4267: '引數' : 將 'size_t' 轉換為 'const arma::uword'，資料可能遺失
+     1>train-rnn.cpp(135): warning C4267: '引數' : 將 'size_t' 轉換為 'int'，資料可能遺失
+     1>train-rnn.cpp(142): warning C4267: '引數' : 將 'size_t' 轉換為 'int'，資料可能遺失
+       Link:
+         C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\x86_amd64\link.exe /ERRORREPORT:PROMPT /OUT:"D:\OneDrive\SourceTree\DeepLearning2015\HW1\VisualStudioVersion\HW1\x64\Release\HW1.exe" /NOLOGO /LIBPATH:D:\OneDrive\SourceTree\DeepLearning2015\HW1\VisualStudioVersion\HW1\x64\Release /LIBPATH:"D:\OneDrive\SourceTree\DeepLearning2015\HW1\VisualStudioVersion\HW1\lib\armadillo-4.650.4\examples\lib_win64" blas_win64_MT.lib lapack_win64_MT.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"D:\OneDrive\SourceTree\DeepLearning2015\HW1\VisualStudioVersion\HW1\x64\Release\HW1.pdb" /OPT:REF /OPT:ICF /LTCG /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"D:\OneDrive\SourceTree\DeepLearning2015\HW1\VisualStudioVersion\HW1\x64\Release\HW1.lib" /MACHINE:X64 x64\Release\nnet.obj
+         "x64\Release\predict-rnn.obj"
+         x64\Release\predict.obj
+         x64\Release\rnnet.obj
+         "x64\Release\train-nn.obj"
+         "x64\Release\train-rnn.obj"
+         x64\Release\utility.obj
+         正在產生程式碼
+         已完成程式碼產生
+     1>nnet.obj : warning LNK4099: 找不到 PDB 'vc120.pdb' (有 'nnet.obj' 或位於 'D:\OneDrive\SourceTree\DeepLearning2015\HW1\VisualStudioVersion\HW1\x64\Release\vc120.pdb')，當做沒有偵錯資訊，連結物件
+     1>predict-rnn.obj : warning LNK4099: 找不到 PDB 'vc120.pdb' (有 'predict-rnn.obj' 或位於 'D:\OneDrive\SourceTree\DeepLearning2015\HW1\VisualStudioVersion\HW1\x64\Release\vc120.pdb')，當做沒有偵錯資訊，連結物件
+     1>predict.obj : warning LNK4099: 找不到 PDB 'vc120.pdb' (有 'predict.obj' 或位於 'D:\OneDrive\SourceTree\DeepLearning2015\HW1\VisualStudioVersion\HW1\x64\Release\vc120.pdb')，當做沒有偵錯資訊，連結物件
+     1>train-nn.obj : warning LNK4099: 找不到 PDB 'vc120.pdb' (有 'train-nn.obj' 或位於 'D:\OneDrive\SourceTree\DeepLearning2015\HW1\VisualStudioVersion\HW1\x64\Release\vc120.pdb')，當做沒有偵錯資訊，連結物件
+     1>utility.obj : warning LNK4099: 找不到 PDB 'vc120.pdb' (有 'utility.obj' 或位於 'D:\OneDrive\SourceTree\DeepLearning2015\HW1\VisualStudioVersion\HW1\x64\Release\vc120.pdb')，當做沒有偵錯資訊，連結物件
+         HW1.vcxproj -> D:\OneDrive\SourceTree\DeepLearning2015\HW1\VisualStudioVersion\HW1\x64\Release\HW1.exe
+     1>專案 "D:\OneDrive\SourceTree\DeepLearning2015\HW1\VisualStudioVersion\HW1\HW1\HW1.vcxproj" (Build 目標) 建置完成。
+
+建置成功。
+
+經過時間 00:00:06.91
