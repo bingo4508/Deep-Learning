@@ -13,7 +13,7 @@ map<string, mat> load_word_vector(ifstream &input_vec, int n_feature){
                 vector<string> x = split(line, " ");
                 mat feature(n_feature, 1);
 
-                for(int i=1;i<x.size()-1;i++){
+                for(int i=1;i<x.size();i++){
                         feature(i-1, 0) = atof(x[i].c_str());
                 }
                 map_vec[x[0]] = feature;
@@ -95,7 +95,7 @@ void RNNet::backprop(mat y){
                 delta.push_back(m);
 
 		// Propagate delta to memory deltas
-		while(!this->mem_deltas[i-1].empty()) this->mem_deltas[i-1].pop_front();
+		this->mem_deltas[i-1].clear();
 		this->mem_deltas[i-1].push_back(m);
 		int size = this->mem_inputs[i-1].size()-1;
 		for(int k=0; k<=size; k++){
@@ -107,6 +107,7 @@ void RNNet::backprop(mat y){
 			this->mem_deltas[i-1].push_back(mm);
 		}
 		this->mem_deltas[i-1].pop_front();	//pop current delta
+
 		// Batching
                 if(!this->batch_start)
                         this->deltas.push_back(m);
@@ -163,42 +164,6 @@ void RNNet::update(){
 }
 
 /***********************************************************************/
-double RNNet::ReLU(double x)
-{
-	return x > 0 ? x : 0;
-}
-double RNNet::ReLU_prime(double x)
-{
-	return x > 0 ? 1 : 0;
-}
-mat RNNet::ReLU_mat(mat m)
-{
-	for (mat::iterator i = m.begin(); i != m.end(); i++){
-		*i = ReLU(*i);
-	}
-	return m;
-}
-mat RNNet::ReLU_prime_mat(mat m)
-{
-	for (mat::iterator i = m.begin(); i != m.end(); i++){
-		*i = ReLU_prime(*i);
-	}
-	return m;
-}
-
-mat RNNet::softmax_mat(mat m)
-{
-	double total = 0;
-	for (mat::iterator i = m.begin(); i != m.end(); i++){
-		*i = exp(*i);
-		total += *i;
-	}
-	for (mat::iterator i = m.begin(); i != m.end(); i++){
-		*i /= total;
-	}
-	return m;
-}
-
 void RNNet::load_train_data(string ftext, string fvec, string fclass, map<string, mat> &map_vec, vector<string> &data_text, vector<int> &index){
         ifstream input_vec(fvec.c_str(), ifstream::in);
         ifstream input_text(ftext.c_str(), ifstream::in);
@@ -217,7 +182,9 @@ void RNNet::load_train_data(string ftext, string fvec, string fclass, map<string
 	load_word_class(input_class, map_class, map_class2);
 	// text
 	for(; getline(input_text, line);){
+		line.erase(remove(line.begin(), line.end(), '\n'), line.end());
 		vector<string> x = split(line, " ");
+		x[x.size()-1] = x[x.size()-1].substr(0,1);
 		data_text.insert(data_text.end(), x.begin(), x.end());
 	}
 
@@ -227,6 +194,38 @@ void RNNet::load_train_data(string ftext, string fvec, string fclass, map<string
         return;
 }
 
+void RNNet::reset_memory(){
+	this->mem_weights.clear();
+	for(int i=0;i<this->mem.size();i++)
+		this->mem[i].clear();
+        for(int i=0;i<this->mem_deltas.size();i++)
+		this->mem_deltas[i].clear();
+        for(int i=0;i<this->mem_inputs.size();i++)
+		this->mem_inputs[i].clear();
+        for(int i=0;i<this->mem_outputs.size();i++)
+		this->mem_outputs[i].clear();
+
+	this->mem.clear();
+	this->mem_deltas.clear();
+	this->mem_inputs.clear();
+	this->mem_outputs.clear();
+
+	int n = this->weights.size();
+	this->mem.resize(n-1);
+	this->mem_deltas.resize(n-1);
+	this->mem_inputs.resize(n-1);
+	this->mem_outputs.resize(n-1);
+
+	for(int i=1;i<n;i++){
+		int s = this->weights[i-1].n_rows;
+		mat W = 2*randu<mat>(s, s)-1;
+		mat M = 2*randu<mat>(s, 1)-1;
+
+		this->mem_weights.push_back(W);
+		this->mem[i-1].push_back(M);
+	}
+
+}
 
 void RNNet::load_model(vector<int> layers){
 	this->mem.resize(layers.size()-2);
@@ -359,11 +358,19 @@ void RNNet::predict(string fname, string fvec, string fclass, string oname, map<
 	ifstream fi(fname.c_str(), ifstream::in);
 	ofstream fo(oname.c_str());
 	string line;
+	int n_lines=0;
 
+	// Get number of lines
+    	while(getline(fi, line))
+        	++n_lines;
+	fi.close();
+	fi.open(fname.c_str(), ifstream::in);
+	int ten_percent = n_lines*0.1;
+
+	// load vector and class
         getline(input_vec, line);
         vector<string> x = split(line, " ");
         int n_feature = atoi(x[1].c_str());
-
 	map_vec = load_word_vector(input_vec, n_feature);
 	load_word_class(input_class, map_class, map_class2);
 
@@ -373,6 +380,12 @@ void RNNet::predict(string fname, string fvec, string fclass, string oname, map<
 	int index_choice;
 
 	for(int i=0; getline(fi, line);i++){
+		// print progress
+		if(i % ten_percent == 0){
+			printf(".");
+			fflush(stdout);
+		}
+
 		x = split(line, " ");
 		for(int j=0; j<x.size(); j++){
 			if(x[j][0] == symbol_choice){
@@ -383,8 +396,6 @@ void RNNet::predict(string fname, string fvec, string fclass, string oname, map<
 		}
 		// Start predict and choose best guess
 		if((i+1) % n_choice == 0){
-			printf("%d \n", (i+1)/n_choice);
-			fflush(stdout);
 			double max_p = -1;
 			int ans;
 			// Check each choie and see whose probability is max
@@ -397,7 +408,7 @@ void RNNet::predict(string fname, string fvec, string fclass, string oname, map<
 				for(int k=0; k<x.size()-1; k++){
 					input = map_vec[x[k]];
 					if(input.n_rows == 0)
-						input = zeros<mat>(n_feature, 1);	//Others has no vector
+						input = zeros<mat>(n_feature, 1);	//Others has no vector, so why not also zeros...
 					this->feedforward(input);
 					if(map_class.find(x[k+1]) != map_class.end()){
 						out = map_class[x[k+1]];

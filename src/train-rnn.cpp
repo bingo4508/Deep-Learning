@@ -70,16 +70,20 @@ int main(int argc, char** argv){
         for(int epoch=0;epoch<max_epoch;epoch++){
                 t1 = clock();
 		printf("eopch %d: ", epoch);
-		int one_percent = train_index.size()*0.01;
+		int ten_percent = train_index.size()*0.1;
                 for(int i=0;i<train_index.size()-1;i++){
-			if(i % one_percent == 0){
+			if(i % ten_percent == 0){
 				printf(".");
 				fflush(stdout);
 		                d.save_model(output_model, structure);
 			}
 			if(d.map_vec.find(d.data_text[train_index[i]]) != d.map_vec.end() &&
 			   d.map_vec.find(d.data_text[train_index[i+1]]) != d.map_vec.end()){
-				d.feedforward(d.map_vec[d.data_text[train_index[i]]]);
+
+				string curr_word = d.data_text[train_index[i]];
+
+				d.feedforward(d.map_vec[curr_word]);
+				// 1-of-n encoding for the last layer
 				mat y = zeros<mat>(layers.back()+1,1);
 				if(d.map_class.find(d.data_text[train_index[i+1]]) != d.map_class.end())
 					y(d.map_class[d.data_text[train_index[i+1]]],0) = 1;
@@ -89,6 +93,9 @@ int main(int argc, char** argv){
 				// Batch has bug, need fix
 				if((i % d.batch_size == 0))
 					d.update();
+				// If end of a sentance - . ? ! then clear memory
+				if(curr_word == "." || curr_word == "!" || curr_word == "?")
+					d.reset_memory();
 			}
                 }
 /*                float train_err = d.report_error_rate(d.data,d.label, train_index);

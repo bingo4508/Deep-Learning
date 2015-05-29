@@ -28,6 +28,8 @@ class RNNet: public NNet{
                 void feedforward(mat);
                 void backprop(mat);
                 void update();
+	
+		void reset_memory();
 
 		void load_model(vector<int>);
 		void load_model(string);
@@ -43,15 +45,6 @@ class RNNet: public NNet{
 		vector<deque<mat> > mem_deltas;
 		vector<deque<mat> > mem_inputs;
 		vector<deque<mat> > mem_outputs;
-
-	protected:
-		/* Activation function */
-		mat ReLU_mat(mat m);
-		mat ReLU_prime_mat(mat m);
-		double ReLU(double x);
-		double ReLU_prime(double x);
-
-		mat softmax_mat(mat m);
 
 };
 

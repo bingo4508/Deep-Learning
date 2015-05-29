@@ -38,8 +38,10 @@ int main(int argc, char** argv){
 	//Initialize neural network
 	d.load_model(model);
 
-	puts("Start predicting...");
+	puts("Start predicting");
+	puts("          <- end");
 	d.predict(test_fname,train_fvec,train_fclass,result,d.map_vec, 5, '[');
+	puts("");
 
 	return 0;
 }
