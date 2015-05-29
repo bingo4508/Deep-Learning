@@ -11,7 +11,7 @@
 using namespace std;
 
 
-int main(int argc, char** argv){
+int main5(int argc, char** argv){
 	clock_t t1, t2;
 	vector<int> layers;
 	string train_fname;
@@ -124,7 +124,7 @@ int main(int argc, char** argv){
 					mat yp = d.outputs.back();
 					int tempMax = 0;
 					for (int j = 1; j < d.map_class.size(); j++)
-					if (yp(j, 0)*yp(d.map_cluster[j], 0) > yp(tempMax, 0)*yp(d.map_cluster[tempMax], 0))
+					if (yp(j, 0)*yp(d.map_cluster[j] + d.map_class.size(), 0) > yp(tempMax, 0)*yp(d.map_cluster[tempMax] + d.map_class.size(), 0))
 						tempMax = j;
 					//printf("\n%d %d", answer, tempMax);
 					if (tempMax == answer)

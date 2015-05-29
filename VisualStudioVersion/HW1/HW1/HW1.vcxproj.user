@@ -1,12 +1,12 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="12.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <LocalDebuggerCommandArguments>0.3 0.9 1 200-200-6362 1000 5 input\train_small_20 output\train_small_test.model</LocalDebuggerCommandArguments>
+    <LocalDebuggerCommandArguments>input\new_testing_data.txt input\train_small.vec input\train_small.class output\train_small_overflowFixed.model output\train_small_overflowFixed.out</LocalDebuggerCommandArguments>
     <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
     <LocalDebuggerWorkingDirectory>..\x64\Release</LocalDebuggerWorkingDirectory>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <LocalDebuggerCommandArguments>0.3 0.9 1 200-200-6362 1000 5 D:\OneDrive\SourceTree\DeepLearning2015\HW1\VisualStudioVersion\HW1\x64\Release\input\train_small_20 D:\OneDrive\SourceTree\DeepLearning2015\HW1\VisualStudioVersion\HW1\x64\Release\output\train_small_test.model</LocalDebuggerCommandArguments>
+    <LocalDebuggerCommandArguments>D:\OneDrive\SourceTree\DeepLearning2015\HW1\VisualStudioVersion\HW1\x64\Release\input\new_testing_data.txt D:\OneDrive\SourceTree\DeepLearning2015\HW1\VisualStudioVersion\HW1\x64\Release\input\train_small.vec D:\OneDrive\SourceTree\DeepLearning2015\HW1\VisualStudioVersion\HW1\x64\Release\input\train_small.class D:\OneDrive\SourceTree\DeepLearning2015\HW1\VisualStudioVersion\HW1\x64\Release\output\train_small.model D:\OneDrive\SourceTree\DeepLearning2015\HW1\VisualStudioVersion\HW1\x64\Release\input\train_small.out</LocalDebuggerCommandArguments>
     <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">

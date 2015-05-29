@@ -3,7 +3,7 @@
 #define SOFTMAX
 //#define RELU
 
-#define TOO_SMALL 0.0000001
+//#define TOO_SMALL 0.0000001
 #define TOO_BIG 9999999
 
 //#define DEBUG
@@ -68,9 +68,11 @@ void RNNet::backprop(mat y){
 #else
 				mat m = this->sigmoid_prime_mat(this->inputs[i]) % (this->weights[i].t()*delta.back());
 #endif
+#ifdef TOO_SMALL
 				double norm = arma::norm(m);
 				if (norm < TOO_SMALL)
 					m = m *0;
+#endif
                 delta.push_back(m);
 
 		// Propagate delta to memory deltas
@@ -83,9 +85,11 @@ void RNNet::backprop(mat y){
 #else
 			mat mm = this->sigmoid_prime_mat(this->mem_inputs[i-1][size-k]) % (this->mem_weights[i-1] * this->mem_deltas[i-1].back());
 #endif
+#ifdef TOO_SMALL
 			double norm = arma::norm(mm);
 			if (norm < TOO_SMALL)
 				mm = mm *0;
+#endif
 			this->mem_deltas[i-1].push_back(mm);
 		}
 		this->mem_deltas[i-1].pop_front();	//pop current delta
@@ -260,9 +264,11 @@ void RNNet::backpropF(mat y, int wordCluster){
 			m = this->sigmoid_prime_mat(this->inputs[i]) % (this->weights[i].t()*delta.back());
 #endif
 		}
+#ifdef TOO_SMALL
 		double norm = arma::norm(m);
 		if (norm < TOO_SMALL)
 			m = m * 0;
+#endif
 		delta.push_back(m);
 
 		// Propagate delta to memory deltas
@@ -275,9 +281,11 @@ void RNNet::backpropF(mat y, int wordCluster){
 #else
 			mat mm = this->sigmoid_prime_mat(this->mem_inputs[i - 1][size - k]) % (this->mem_weights[i - 1] * this->mem_deltas[i - 1].back());
 #endif
+#ifdef TOO_SMALL
 			double norm = arma::norm(mm);
 			if (norm < TOO_SMALL)
 				mm = mm * 0;
+#endif
 			this->mem_deltas[i - 1].push_back(mm);
 		}
 		this->mem_deltas[i - 1].pop_front();	//pop current delta
@@ -375,8 +383,10 @@ void RNNet::updateF(int wordCluster){
 /***********************************************************************/
 double RNNet::ReLU(double x)
 {
+#ifdef TOO_SMALL
 	if (x < TOO_SMALL && x > -TOO_SMALL)
 		return 0;
+#endif
 	return x > 0 ? x : 0;
 }
 double RNNet::ReLU_prime(double x)
@@ -415,8 +425,10 @@ mat RNNet::softmax_mat(mat m, bool fac)
 		for (int i = 0; i < map_class.size(); i++)
 		{
 			m[i] /= total;
+#ifdef TOO_SMALL
 			if (m[i] < TOO_SMALL && m[i] > -TOO_SMALL)
 				m[i] = 0;
+#endif
 			if (m[i] > 1)
 				m[i] = 1;
 			if (m[i] != m[i])
@@ -435,8 +447,10 @@ mat RNNet::softmax_mat(mat m, bool fac)
 		for (int i = map_class.size(); i < m.size(); i++)
 		{
 			m[i] /= total;
+#ifdef TOO_SMALL
 			if (m[i] < TOO_SMALL && m[i] > -TOO_SMALL)
 				m[i] = 0;
+#endif
 			if (m[i] > 1)
 				m[i] = 1;
 			if (m[i] != m[i])
@@ -452,8 +466,10 @@ mat RNNet::softmax_mat(mat m, bool fac)
 		}
 		for (mat::iterator i = m.begin(); i != m.end(); i++){
 			*i /= total;
+#ifdef TOO_SMALL
 			if (*i < TOO_SMALL && *i > -TOO_SMALL)
 				*i = 0;
+#endif
 		}
 	}
 	return m;
@@ -512,6 +528,7 @@ void RNNet::load_train_data(string ftext, string fvec, string fclass, map<string
 	for(int i=0; getline(input_class, line) && line != "";i++){
 		vector<string> x = split(line, " ");
 		map_class[x[0]] = i;
+		map_class2[i] = x[0];
 		if (x.size() > 1)
 		{
 			map_cluster[i] = atoi(x[1].c_str());
@@ -651,20 +668,113 @@ void RNNet::save_model(string fname, string structure){
 	}
 }
 
-void RNNet::predict(string fname, string oname, int has_answer){
-	fstream fin;
+void RNNet::predict(string fname, string fvec, string fclass, string oname, map<string, mat> &map_vec, int n_choice, char symbol_choice){
+	ifstream input_vec(fvec.c_str(), ifstream::in);
+	ifstream input_class(fclass.c_str(), ifstream::in);
 	ifstream fi(fname.c_str(), ifstream::in);
 	ofstream fo(oname.c_str());
+	string line;
+	int n_lines = 0;
 
-	int correct = 0;
-	int i=0;
-	for(string line; getline(fi, line);i++){
-		//TODO
+	// Get number of lines
+	while (getline(fi, line))
+		++n_lines;
+	fi.close();
+	fi.open(fname.c_str(), ifstream::in);
+	int ten_percent = n_lines*0.1;
+
+	// load vector and class
+	getline(input_vec, line);
+	vector<string> x = split(line, " ");
+	int n_feature = atoi(x[1].c_str());
+	// word vectors
+	for (; getline(input_vec, line);){
+		vector<string> x = split(line, " ");
+		mat feature(n_feature, 1);
+
+		for (int i = 1; i<x.size() - 1; i++){
+			feature(i - 1, 0) = atof(x[i].c_str());
+		}
+		map_vec[x[0]] = feature;
 	}
-	if(has_answer)
-		printf("Accuracy: %f\n",float(correct)/i);
+	// class of words
+	getline(input_class, line);
+	map_cluster_i.resize(atoi(line.c_str()) + 1);
+	numClusters = atoi(line.c_str()) + 1;
+
+	for (int i = 0; getline(input_class, line) && line != ""; i++){
+		vector<string> x = split(line, " ");
+		map_class[x[0]] = i;
+		map_class2[i] = x[0];
+		if (x.size() > 1)
+		{
+			map_cluster[i] = atoi(x[1].c_str());
+			map_cluster_i[atoi(x[1].c_str())].push_back(i);
+		}
+	}
+
+	// predict
+	// format: a b c d [e] f g
+	vector<string> choices;
+	int index_choice;
+
+	for (int i = 0; getline(fi, line); i++){
+		// print progress
+		if (i % ten_percent == 0){
+			printf(".");
+			fflush(stdout);
+		}
+
+		x = split(line, " ");
+		for (int j = 0; j<x.size(); j++){
+			if (x[j][0] == symbol_choice){
+				index_choice = j;
+				choices.push_back(x[j].substr(1, x[j].length() - 2));
+				break;
+			}
+		}
+		// Start predict and choose best guess
+		if ((i + 1) % n_choice == 0){
+			double max_p = -1;
+			int ans;
+			// Check each choie and see whose probability is max
+			for (int j = 0; j<n_choice; j++){
+				double p = 1;
+				x[index_choice] = choices[j];
+				mat input;
+				int out;
+				// Forward a whole sentance
+				for (int k = 0; k<x.size() - 1; k++){
+					input = map_vec[x[k]];
+					if (input.n_rows == 0)
+						input = zeros<mat>(n_feature, 1);	//Others has no vector, so why not also zeros...
+					this->feedforward(input);
+					if (map_class.find(x[k + 1]) != map_class.end()){
+						out = map_class[x[k + 1]];
+					}
+					else{
+						out = this->outputs.back().n_rows - 1;
+					}
+					if (numClusters == 1)
+						p *= this->outputs.back()(out, 0);
+					else
+					{
+						p *= this->outputs.back()(out, 0)*this->outputs.back()(map_cluster[out]+map_class.size(), 0);
+					}
+				}
+				//cout << p << endl;
+				if (p > max_p){
+					max_p = p;
+					ans = j;
+				}
+			}
+			fo << ans << "\n";
+			choices.clear();
+		}
+	}
 
 	return;
 }
+
 
 

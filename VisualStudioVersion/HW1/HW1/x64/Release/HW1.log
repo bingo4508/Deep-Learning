@@ -1,9 +1,26 @@
-﻿已經開始建置於 2015/5/29 上午 10:28:33。
+﻿已經開始建置於 2015/5/29 上午 11:34:36。
      1>節點 2 (Build 目標) 上的專案 "D:\OneDrive\SourceTree\DeepLearning2015\HW1\VisualStudioVersion\HW1\HW1\HW1.vcxproj"。
      1>ClCompile:
-         C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\x86_amd64\CL.exe /c /I"D:\OneDrive\SourceTree\DeepLearning2015\HW1\VisualStudioVersion\HW1\lib\armadillo-4.650.4\include" /ID:\OneDrive\SourceTree\DeepLearning2015\HW1\VisualStudioVersion\HW1\lib\openBlas\include /Zi /nologo /W3 /WX- /sdl /O2 /Oi /GL /D _CRT_SECURE_NO_WARNINGS /D _MBCS /Gm- /EHsc /MD /GS /Gy /fp:precise /Zc:wchar_t /Zc:forScope /Fo"x64\Release\\" /Fd"x64\Release\vc120.pdb" /Gd /TP /errorReport:prompt predict.cpp
-         predict.cpp
-     1>predict.cpp(13): warning C4101: 'learning_rate' : 未參考的區域變數
+         C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\x86_amd64\CL.exe /c /I"D:\OneDrive\SourceTree\DeepLearning2015\HW1\VisualStudioVersion\HW1\lib\armadillo-4.650.4\include" /ID:\OneDrive\SourceTree\DeepLearning2015\HW1\VisualStudioVersion\HW1\lib\openBlas\include /Zi /nologo /W3 /WX- /sdl /O2 /Oi /GL /D _CRT_SECURE_NO_WARNINGS /D _MBCS /Gm- /EHsc /MD /GS /Gy /fp:precise /Zc:wchar_t /Zc:forScope /Fo"x64\Release\\" /Fd"x64\Release\vc120.pdb" /Gd /TP /errorReport:prompt rnnet.cpp
+         rnnet.cpp
+     1>rnnet.cpp(65): warning C4267: '正在初始化' : 將 'size_t' 轉換為 'int'，資料可能遺失
+     1>rnnet.cpp(81): warning C4267: '正在初始化' : 將 'size_t' 轉換為 'int'，資料可能遺失
+     1>rnnet.cpp(112): warning C4267: '正在初始化' : 將 'size_t' 轉換為 'int'，資料可能遺失
+     1>rnnet.cpp(124): warning C4267: '正在初始化' : 將 'size_t' 轉換為 'int'，資料可能遺失
+     1>rnnet.cpp(227): warning C4018: '<' : signed/unsigned 不相符
+     1>rnnet.cpp(248): warning C4267: '正在初始化' : 將 'size_t' 轉換為 'int'，資料可能遺失
+     1>rnnet.cpp(277): warning C4267: '正在初始化' : 將 'size_t' 轉換為 'int'，資料可能遺失
+     1>rnnet.cpp(308): warning C4267: '正在初始化' : 將 'size_t' 轉換為 'int'，資料可能遺失
+     1>rnnet.cpp(319): warning C4267: '正在初始化' : 將 'size_t' 轉換為 'int'，資料可能遺失
+     1>rnnet.cpp(438): warning C4267: '正在初始化' : 將 'size_t' 轉換為 'int'，資料可能遺失
+     1>rnnet.cpp(438): warning C4018: '<' : signed/unsigned 不相符
+     1>rnnet.cpp(447): warning C4267: '正在初始化' : 將 'size_t' 轉換為 'int'，資料可能遺失
+     1>rnnet.cpp(447): warning C4018: '<' : signed/unsigned 不相符
+     1>rnnet.cpp(480): warning C4267: '引數' : 將 'size_t' 轉換為 'const arma::uword'，資料可能遺失
+     1>rnnet.cpp(484): warning C4267: '引數' : 將 'size_t' 轉換為 'const arma::uword'，資料可能遺失
+     1>rnnet.cpp(493): warning C4267: '引數' : 將 'size_t' 轉換為 'const arma::uword'，資料可能遺失
+     1>rnnet.cpp(684): warning C4244: '正在初始化' : 將 'double' 轉換為 'int'，由於類型不同，可能導致資料遺失
+     1>rnnet.cpp(762): warning C4267: '引數' : 將 'size_t' 轉換為 'const arma::uword'，資料可能遺失
        Link:
          C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\x86_amd64\link.exe /ERRORREPORT:PROMPT /OUT:"D:\OneDrive\SourceTree\DeepLearning2015\HW1\VisualStudioVersion\HW1\x64\Release\HW1.exe" /NOLOGO /LIBPATH:D:\OneDrive\SourceTree\DeepLearning2015\HW1\VisualStudioVersion\HW1\x64\Release /LIBPATH:"D:\OneDrive\SourceTree\DeepLearning2015\HW1\VisualStudioVersion\HW1\lib\armadillo-4.650.4\examples\lib_win64" blas_win64_MT.lib lapack_win64_MT.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"D:\OneDrive\SourceTree\DeepLearning2015\HW1\VisualStudioVersion\HW1\x64\Release\HW1.pdb" /OPT:REF /OPT:ICF /LTCG /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"D:\OneDrive\SourceTree\DeepLearning2015\HW1\VisualStudioVersion\HW1\x64\Release\HW1.lib" /MACHINE:X64 x64\Release\nnet.obj
          "x64\Release\predict-rnn.obj"
@@ -15,7 +32,6 @@
          正在產生程式碼
          已完成程式碼產生
      1>nnet.obj : warning LNK4099: 找不到 PDB 'vc120.pdb' (有 'nnet.obj' 或位於 'D:\OneDrive\SourceTree\DeepLearning2015\HW1\VisualStudioVersion\HW1\x64\Release\vc120.pdb')，當做沒有偵錯資訊，連結物件
-     1>predict-rnn.obj : warning LNK4099: 找不到 PDB 'vc120.pdb' (有 'predict-rnn.obj' 或位於 'D:\OneDrive\SourceTree\DeepLearning2015\HW1\VisualStudioVersion\HW1\x64\Release\vc120.pdb')，當做沒有偵錯資訊，連結物件
      1>train-nn.obj : warning LNK4099: 找不到 PDB 'vc120.pdb' (有 'train-nn.obj' 或位於 'D:\OneDrive\SourceTree\DeepLearning2015\HW1\VisualStudioVersion\HW1\x64\Release\vc120.pdb')，當做沒有偵錯資訊，連結物件
      1>utility.obj : warning LNK4099: 找不到 PDB 'vc120.pdb' (有 'utility.obj' 或位於 'D:\OneDrive\SourceTree\DeepLearning2015\HW1\VisualStudioVersion\HW1\x64\Release\vc120.pdb')，當做沒有偵錯資訊，連結物件
          HW1.vcxproj -> D:\OneDrive\SourceTree\DeepLearning2015\HW1\VisualStudioVersion\HW1\x64\Release\HW1.exe
@@ -23,4 +39,4 @@
 
 建置成功。
 
-經過時間 00:00:03.84
+經過時間 00:00:03.15
