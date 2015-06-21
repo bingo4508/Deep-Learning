@@ -39,6 +39,7 @@ class RNNet: public NNet{
 		
 
 		int back_t;
+		bool is_input_1_of_n_encoding;
 	private:
 		vector<mat> mem_weights;
 		vector<deque<mat> > mem;

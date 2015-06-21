@@ -21,6 +21,7 @@ class NNet {
                 double learning_rate;
                 double learning_rate_decay;
                 int batch_size;
+		bool batch_start;
 
                 /* Network data structure */
                 vector<mat> data;
@@ -40,7 +41,7 @@ class NNet {
                 /* Core algorithms */
                 int feedforward(mat);
                 void backprop(mat);
-                void update();
+                void update(int);
 
                 /* Prediction and validation */
                 void predict(string,string,int);
@@ -53,7 +54,8 @@ class NNet {
                 vector<mat> outputs;
                 vector<mat> deltas;
 
-                bool batch_start;
+		vector<mat> batch_weight;
+		vector<mat> batch_bias;
 
                 /* Activation function */
                 mat sigmoid_mat(mat m);

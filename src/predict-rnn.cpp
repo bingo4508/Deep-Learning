@@ -28,6 +28,8 @@ int main(int argc, char** argv){
 		train_fclass.assign(argv[3]);
 		model.assign(argv[4]);
 		result.assign(argv[5]);
+
+		d.is_input_1_of_n_encoding = false;
 	}else{
 		printf("Usage:\n");
 		printf("./predict test_file train.vec train.class model_name output_name\n");

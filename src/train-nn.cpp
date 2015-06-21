@@ -15,7 +15,7 @@ int main(int argc, char** argv){
         vector<int> layers;
         string train_fname;
         int max_epoch;
-        float valid_ratio=0.1;
+        float valid_ratio=0.05;
         string output_model;
         string structure;
         NNet d;
@@ -72,8 +72,7 @@ int main(int argc, char** argv){
                         d.feedforward(d.data[*it]);
                         y(d.label[*it],0) = 1;
                         d.backprop(y);
-                        if((j % d.batch_size == 0))
-                                d.update();
+                        d.update(j);
                 }
                 float train_err = d.report_error_rate(d.data,d.label, train_index);
                 float valid_err = d.report_error_rate(d.data,d.label, valid_index);

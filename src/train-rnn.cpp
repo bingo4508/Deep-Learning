@@ -42,6 +42,8 @@ int main(int argc, char** argv){
 		d.back_t = atoi(argv[6]);
                 train_fname.assign(argv[7]);
                 output_model.assign(argv[8]);
+
+		d.is_input_1_of_n_encoding = false;
         }
         //Initialize neural network
         if(argc == 9){
@@ -69,7 +71,7 @@ int main(int argc, char** argv){
         puts("Start training...");
         for(int epoch=0;epoch<max_epoch;epoch++){
                 t1 = clock();
-		printf("eopch %d: ", epoch);
+		printf("epoch %d: ", epoch);
 		int ten_percent = train_index.size()*0.1;
                 for(int i=0;i<train_index.size()-1;i++){
 			if(i % ten_percent == 0){
@@ -82,7 +84,16 @@ int main(int argc, char** argv){
 
 				string curr_word = d.data_text[train_index[i]];
 
-				d.feedforward(d.map_vec[curr_word]);
+				if(d.is_input_1_of_n_encoding){
+					mat y = zeros<mat>(layers[0]+1,1);
+					if(d.map_class.find(curr_word) != d.map_class.end())
+						y(d.map_class[curr_word],0) = 1;
+					else
+						y(layers[0],0) = 1;     //Others
+					d.feedforward(y);
+				}else{
+					d.feedforward(d.map_vec[curr_word]);
+				}
 				// 1-of-n encoding for the last layer
 				mat y = zeros<mat>(layers.back()+1,1);
 				if(d.map_class.find(d.data_text[train_index[i+1]]) != d.map_class.end())

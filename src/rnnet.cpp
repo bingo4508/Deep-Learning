@@ -234,6 +234,8 @@ void RNNet::load_model(vector<int> layers){
 	this->mem_outputs.resize(layers.size()-2);
 
 	layers[layers.size()-1] += 1;	//For "Others"
+	if(is_input_1_of_n_encoding)
+		layers[0] += 1;
 
 	//Initialize weights
 	for(int i=1;i<layers.size();i++){
@@ -264,6 +266,8 @@ void RNNet::load_model(string fname){
 		layers.push_back(atoi(x[i].c_str()));
 	}
 	layers[layers.size()-1] += 1; //For "Others"
+        if(is_input_1_of_n_encoding)
+                layers[0] += 1;
 
 	this->mem.resize(layers.size()-2);
 	this->mem_deltas.resize(layers.size()-2);
@@ -406,9 +410,18 @@ void RNNet::predict(string fname, string fvec, string fclass, string oname, map<
 				int out;
 				// Forward a whole sentance
 				for(int k=0; k<x.size()-1; k++){
-					input = map_vec[x[k]];
-					if(input.n_rows == 0)
-						input = zeros<mat>(n_feature, 1);	//Others has no vector, so why not also zeros...
+					if(is_input_1_of_n_encoding){
+						input = zeros<mat>(this->weights[0].n_cols,1);
+						if(map_class.find(x[k]) != map_class.end())
+							input(map_class[x[k]],0) = 1;
+						else
+							input(this->weights[0].n_cols-1,0) = 1;     //Others
+					}else{
+						input = map_vec[x[k]];
+						if(input.n_rows == 0){
+							input = zeros<mat>(n_feature, 1);	//Others has no vector, so why not also zeros...
+						}
+					}
 					this->feedforward(input);
 					if(map_class.find(x[k+1]) != map_class.end()){
 						out = map_class[x[k+1]];

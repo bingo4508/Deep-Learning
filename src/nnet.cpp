@@ -1,7 +1,7 @@
 #include "nnet.h"
 
 #define SOFTMAX
-//#define RELU
+#define RELU
 
 void print_size(mat &m){
 	printf("(%d,%d)\n",m.n_rows,m.n_cols);
@@ -15,7 +15,7 @@ int NNet::max(mat &m){
 }
 
 NNet::NNet(){
-	this->batch_start = false;
+	batch_start = false;
 }
 
 //input: Nx1
@@ -56,12 +56,8 @@ void NNet::backprop(mat y){
 	mat D = error % this->sigmoid_prime_mat(this->inputs.back());
 #endif
 
-	if(!this->batch_start){
-		this->deltas.clear();
-		this->deltas.push_back(D);
-	}else{
-		this->deltas[0] += D;
-	}
+	this->deltas.clear();
+	this->deltas.push_back(D);
 	delta.push_back(D);
 
 	//%: element-wise do
@@ -73,23 +69,35 @@ void NNet::backprop(mat y){
 #endif
 		delta.push_back(m);
 
-		if(!this->batch_start)
-			this->deltas.push_back(m);
-		else
-			this->deltas[j] += m;
+		this->deltas.push_back(m);
 	}
-	if(!this->batch_start)
-		this->batch_start = true;
 }
 
-void NNet::update(){
-	this->batch_start = false;
+void NNet::update(int iter){
 	int last = this->weights.size()-1;
 
-	for(int i=0;i<=last;i++){
-		this->weights[i] -= this->learning_rate*((this->deltas[last-i]/this->batch_size)*this->outputs[i].t());
-		this->bias[i] -= this->learning_rate*(this->deltas[last-i]/this->batch_size);
+	if(iter != 0 && iter % this->batch_size == 0){
+		//update
+		for(int i=0;i<=last;i++){
+			this->weights[i] -= this->learning_rate*(this->batch_weight[i]/this->batch_weight.size());
+			this->bias[i] -= this->learning_rate*(this->batch_bias[i]/this->batch_bias.size());
+		}
+		batch_start = false;
+		this->batch_weight.clear();
+		this->batch_bias.clear();	
 	}
+	//batching
+	for(int i=0;i<=last;i++){
+		if(batch_start == false){
+			this->batch_weight.push_back(this->deltas[last-i]*this->outputs[i].t());
+			this->batch_bias.push_back(this->deltas[last-i]);
+		}else{
+			this->batch_weight[i] += this->deltas[last-i]*this->outputs[i].t();
+			this->batch_bias[i] += this->deltas[last-i];	
+		}
+	}
+	if(batch_start == false)
+		batch_start = true;
 }
 
 
